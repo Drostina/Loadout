@@ -4,7 +4,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use super::manifest::{is_app_manifest, quoted_values, read_game};
-use super::localconfig;
+use super::{localconfig, proton};
 
 #[derive(Debug, Clone)]
 pub struct SteamGame {
@@ -22,7 +22,7 @@ pub fn installed_games() -> Vec<SteamGame> {
         .flat_map(|root| {
             let libs = library_paths(&root);
             let opts = localconfig::launch_options(&root);
-            let proton = localconfig::proton_versions(&root);
+            let proton = proton::versions(&root);
             libs.into_iter().flat_map(move |lib| read_games(lib, &root, &opts, &proton))
         })
         .collect::<Vec<_>>();
