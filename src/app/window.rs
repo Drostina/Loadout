@@ -1,3 +1,6 @@
+use std::path::Path;
+
+use adw::prelude::ActionRowExt;
 use adw::subclass::prelude::*;
 use gtk::prelude::*;
 use gtk::{gio, glib};
@@ -57,23 +60,25 @@ impl LoadoutWindow {
         let list = &self.imp().games_list;
 
         if games.is_empty() {
-            append_game_name(list, "No installed Steam games found");
+            list.append(&game_row("No installed Steam games found", None));
             return;
         }
 
         for game in games {
-            append_game_name(list, &game.name);
+            list.append(&game_row(&game.name, game.icon_path.as_deref()));
         }
     }
 }
 
-fn append_game_name(list: &gtk::ListBox, name: &str) {
-    let label = gtk::Label::new(Some(name));
-    label.set_xalign(0.0);
-    label.set_margin_top(12);
-    label.set_margin_bottom(12);
-    label.set_margin_start(12);
-    label.set_margin_end(12);
-    list.append(&label);
+fn game_row(name: &str, icon_path: Option<&Path>) -> adw::ActionRow {
+    let row = adw::ActionRow::builder().title(name).build();
+
+    if let Some(path) = icon_path {
+        let image = gtk::Image::from_file(path);
+        image.set_pixel_size(32);
+        row.add_prefix(&image);
+    }
+
+    row
 }
 

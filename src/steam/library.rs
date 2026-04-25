@@ -1,19 +1,22 @@
 use std::env;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use super::manifest::{is_app_manifest, quoted_values, read_game};
 
 #[derive(Debug, Clone)]
 pub struct SteamGame {
     pub name: String,
+    pub icon_path: Option<PathBuf>,
 }
 
 pub fn installed_games() -> Vec<SteamGame> {
     let mut games = steam_roots()
         .into_iter()
-        .flat_map(library_paths)
-        .flat_map(read_games)
+        .flat_map(|root| {
+            let libs = library_paths(&root);
+            libs.into_iter().flat_map(move |lib| read_games(lib, &root))
+        })
         .collect::<Vec<_>>();
 
     games.sort_by_key(|game| game.name.to_lowercase());
@@ -36,8 +39,8 @@ fn steam_roots() -> Vec<PathBuf> {
     .collect()
 }
 
-fn library_paths(root: PathBuf) -> Vec<PathBuf> {
-    let mut libraries = vec![root.clone()];
+fn library_paths(root: &Path) -> Vec<PathBuf> {
+    let mut libraries = vec![root.to_path_buf()];
     let library_file = root.join("steamapps/libraryfolders.vdf");
     let Ok(contents) = fs::read_to_string(library_file) else {
         return libraries;
@@ -53,7 +56,7 @@ fn library_paths(root: PathBuf) -> Vec<PathBuf> {
     libraries
 }
 
-fn read_games(library: PathBuf) -> Vec<SteamGame> {
+fn read_games(library: PathBuf, steam_root: &Path) -> Vec<SteamGame> {
     let steamapps = library.join("steamapps");
     let Ok(entries) = fs::read_dir(steamapps) else {
         return Vec::new();
@@ -63,7 +66,7 @@ fn read_games(library: PathBuf) -> Vec<SteamGame> {
         .filter_map(Result::ok)
         .map(|entry| entry.path())
         .filter(|path| is_app_manifest(path))
-        .filter_map(read_game)
+        .filter_map(|path| read_game(path, steam_root))
         .collect()
 }
 

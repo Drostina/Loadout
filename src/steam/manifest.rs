@@ -1,13 +1,27 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
+use super::icon;
 use super::library::SteamGame;
 
-pub fn read_game(path: PathBuf) -> Option<SteamGame> {
+pub fn read_game(path: PathBuf, steam_root: &Path) -> Option<SteamGame> {
     let contents = fs::read_to_string(path).ok()?;
     let name = quoted_values(&contents, "name").into_iter().next()?;
 
-    Some(SteamGame { name })
+    if is_non_game(&name) {
+        return None;
+    }
+
+    let appid = quoted_values(&contents, "appid").into_iter().next()?;
+    let icon_path = icon::find(steam_root, &appid);
+
+    Some(SteamGame { name, icon_path })
+}
+
+fn is_non_game(name: &str) -> bool {
+    name.starts_with("Proton")
+        || name.starts_with("Steam Linux Runtime")
+        || name == "Steamworks Common Redistributables"
 }
 
 pub fn is_app_manifest(path: &Path) -> bool {
