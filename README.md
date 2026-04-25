@@ -1,2 +1,3 @@
-# Loadout
-Easy Managment of Protons &amp; Launch Options
+# loadout
+
+A description of this project.
