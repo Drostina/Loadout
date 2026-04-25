@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 use super::icon;
 use super::library::SteamGame;
 
-pub fn read_game(path: PathBuf, steam_root: &Path, opts: &HashMap<String, String>) -> Option<SteamGame> {
+pub fn read_game(path: PathBuf, steam_root: &Path, opts: &HashMap<String, String>, proton: &HashMap<String, String>) -> Option<SteamGame> {
     let contents = fs::read_to_string(path).ok()?;
     let name = quoted_values(&contents, "name").into_iter().next()?;
 
@@ -14,10 +14,13 @@ pub fn read_game(path: PathBuf, steam_root: &Path, opts: &HashMap<String, String
     }
 
     let appid = quoted_values(&contents, "appid").into_iter().next()?;
-    let icon_path = icon::find(steam_root, &appid);
-    let launch_options = opts.get(&appid).cloned();
 
-    Some(SteamGame { name, icon_path, launch_options })
+    Some(SteamGame {
+        icon_path: icon::find(steam_root, &appid),
+        launch_options: opts.get(&appid).cloned(),
+        proton: proton.get(&appid).cloned(),
+        name,
+    })
 }
 
 fn is_non_game(name: &str) -> bool {

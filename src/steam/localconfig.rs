@@ -11,13 +11,22 @@ pub fn launch_options(steam_root: &Path) -> HashMap<String, String> {
     for entry in users.filter_map(Result::ok) {
         let path = entry.path().join("config/localconfig.vdf");
         if let Ok(contents) = fs::read_to_string(path) {
-            parse(&contents, &mut map);
+            parse(&contents, "LaunchOptions", &mut map);
         }
     }
     map
 }
 
-fn parse(contents: &str, map: &mut HashMap<String, String>) {
+pub fn proton_versions(steam_root: &Path) -> HashMap<String, String> {
+    let Ok(contents) = fs::read_to_string(steam_root.join("config/config.vdf")) else {
+        return HashMap::new();
+    };
+    let mut map = HashMap::new();
+    parse(&contents, "name", &mut map);
+    map
+}
+
+fn parse(contents: &str, field: &str, map: &mut HashMap<String, String>) {
     let mut current_appid: Option<String> = None;
 
     for line in contents.lines() {
@@ -27,9 +36,9 @@ fn parse(contents: &str, map: &mut HashMap<String, String>) {
 
         if value.is_empty() && key.chars().all(|c| c.is_ascii_digit()) {
             current_appid = Some(key.to_string());
-        } else if key == "LaunchOptions" && !value.is_empty() {
+        } else if key == field && !value.is_empty() {
             if let Some(appid) = &current_appid {
-                map.insert(appid.clone(), value.to_string());
+                map.entry(appid.clone()).or_insert_with(|| value.to_string());
             }
         }
     }

@@ -11,6 +11,7 @@ pub struct SteamGame {
     pub name: String,
     pub icon_path: Option<PathBuf>,
     pub launch_options: Option<String>,
+    pub proton: Option<String>,
 }
 
 pub fn installed_games() -> Vec<SteamGame> {
@@ -19,7 +20,8 @@ pub fn installed_games() -> Vec<SteamGame> {
         .flat_map(|root| {
             let libs = library_paths(&root);
             let opts = localconfig::launch_options(&root);
-            libs.into_iter().flat_map(move |lib| read_games(lib, &root, &opts))
+            let proton = localconfig::proton_versions(&root);
+            libs.into_iter().flat_map(move |lib| read_games(lib, &root, &opts, &proton))
         })
         .collect::<Vec<_>>();
 
@@ -60,7 +62,7 @@ fn library_paths(root: &Path) -> Vec<PathBuf> {
     libraries
 }
 
-fn read_games(library: PathBuf, steam_root: &Path, opts: &HashMap<String, String>) -> Vec<SteamGame> {
+fn read_games(library: PathBuf, steam_root: &Path, opts: &HashMap<String, String>, proton: &HashMap<String, String>) -> Vec<SteamGame> {
     let steamapps = library.join("steamapps");
     let Ok(entries) = fs::read_dir(steamapps) else {
         return Vec::new();
@@ -70,7 +72,7 @@ fn read_games(library: PathBuf, steam_root: &Path, opts: &HashMap<String, String
         .filter_map(Result::ok)
         .map(|entry| entry.path())
         .filter(|path| is_app_manifest(path))
-        .filter_map(|path| read_game(path, steam_root, opts))
+        .filter_map(|path| read_game(path, steam_root, opts, proton))
         .collect()
 }
 
