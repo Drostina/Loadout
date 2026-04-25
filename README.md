@@ -5,6 +5,8 @@
 
 Mass manage Steam launch options, Proton versions, and Gamescope presets from Loadout.
 
+⚠️ This project is a work in progress and not intended for use.
+
 ## Features
 
 - Scan installed Steam games
