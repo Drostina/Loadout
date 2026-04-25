@@ -60,18 +60,22 @@ impl LoadoutWindow {
         let list = &self.imp().games_list;
 
         if games.is_empty() {
-            list.append(&game_row("No installed Steam games found", None));
+            list.append(&game_row("No installed Steam games found", None, None));
             return;
         }
 
         for game in games {
-            list.append(&game_row(&game.name, game.icon_path.as_deref()));
+            list.append(&game_row(&game.name, game.icon_path.as_deref(), game.launch_options.as_deref()));
         }
     }
 }
 
-fn game_row(name: &str, icon_path: Option<&Path>) -> adw::ActionRow {
+fn game_row(name: &str, icon_path: Option<&Path>, launch_options: Option<&str>) -> adw::ActionRow {
     let row = adw::ActionRow::builder().title(name).build();
+
+    if let Some(opts) = launch_options {
+        row.set_subtitle(opts);
+    }
 
     if let Some(path) = icon_path {
         let image = gtk::Image::from_file(path);
