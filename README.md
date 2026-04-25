@@ -13,6 +13,8 @@ Mass manage Steam launch options, Proton versions, and Gamescope presets from Lo
 - Save reusable Gamescope presets
 - Back up changes before writing them
 
+[![Loadout screenshot](assets/readme/sc1.png)](assets/readme/sc1.png)
+
 ## Build
 
 ```sh
