@@ -19,6 +19,8 @@ pub fn read_game(path: PathBuf, steam_root: &Path, opts: &HashMap<String, String
         icon_path: icon::find(steam_root, &appid),
         launch_options: opts.get(&appid).cloned(),
         proton: proton.get(&appid).cloned(),
+        steam_root: steam_root.to_path_buf(),
+        appid,
         name,
     })
 }

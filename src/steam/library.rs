@@ -9,6 +9,8 @@ use super::localconfig;
 #[derive(Debug, Clone)]
 pub struct SteamGame {
     pub name: String,
+    pub appid: String,
+    pub steam_root: PathBuf,
     pub icon_path: Option<PathBuf>,
     pub launch_options: Option<String>,
     pub proton: Option<String>,
