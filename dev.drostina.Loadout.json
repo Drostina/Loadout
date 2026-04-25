@@ -45,6 +45,9 @@
                     "type" : "git",
                     "url" : "file:///home/jackson/Downloads"
                 }
+            ],
+            "config-opts" : [
+                "--libdir=lib"
             ]
         }
     ]

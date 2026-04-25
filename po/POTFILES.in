@@ -3,4 +3,4 @@
 data/dev.drostina.Loadout.desktop.in
 data/dev.drostina.Loadout.metainfo.xml.in
 data/dev.drostina.Loadout.gschema.xml
-src/window.ui
+src/app/window.ui
