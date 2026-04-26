@@ -8,12 +8,12 @@
   <strong>Mass manage Steam launch options, Proton versions, and Gamescope presets</strong>
 </p>
 
+<p align="center"><strong>⚠️ This project is a work in progress and not intended for use.</strong></p>
+
 <p align="center">
   <a href="https://www.gnome.org/"><img src="https://img.shields.io/badge/GNOME-4A86CF?logo=gnome&logoColor=white" alt="Built For GNOME" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
 </p>
-
-⚠️ This project is a work in progress and not intended for use.
 
 ## Features
 
