@@ -38,12 +38,24 @@
           </object>
         </child>
         <child>
-          <object class="GtkButton" id="add_preset_button">
-            <property name="label">Add preset</property>
+          <object class="GtkBox">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">8</property>
             <property name="halign">start</property>
-            <style>
-              <class name="suggested-action"/>
-            </style>
+            <child>
+              <object class="GtkButton" id="add_preset_button">
+                <property name="label">Add preset</property>
+                <style>
+                  <class name="suggested-action"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="cancel_edit_button">
+                <property name="label">Cancel edit</property>
+                <property name="visible">false</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>

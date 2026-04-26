@@ -158,6 +158,7 @@ fn row(
     row.add_row(&options_row);
 
     let preset_model_labels: Vec<&str> = std::iter::once("None")
+        .chain(std::iter::once("Custom"))
         .chain(presets.iter().map(|p| p.name.as_str()))
         .collect();
     let preset_model = gtk::StringList::new(&preset_model_labels);
@@ -173,8 +174,8 @@ fn row(
         presets
             .iter()
             .position(|p| p.command == launch_text)
-            .map(|i| (i + 1) as u32)
-            .unwrap_or(0)
+            .map(|i| (i + 2) as u32)
+            .unwrap_or(1)
     };
     preset_dd.set_selected(preset_idx);
 
@@ -200,10 +201,13 @@ fn row(
             return;
         }
         let i = dropdown.selected() as usize;
+        if i == 1 {
+            return;
+        }
         let command = if i == 0 {
             ""
         } else {
-            let Some(command) = commands_c.get(i - 1) else {
+            let Some(command) = commands_c.get(i - 2) else {
                 return;
             };
             command.as_str()
@@ -241,8 +245,8 @@ fn row(
                 preset_commands_for_match
                     .iter()
                     .position(|cmd| cmd == text.as_str())
-                    .map(|i| (i + 1) as u32)
-                    .unwrap_or(0)
+                    .map(|i| (i + 2) as u32)
+                    .unwrap_or(1)
             };
             syncing_preset_selection_c.set(true);
             dd.set_selected(idx);

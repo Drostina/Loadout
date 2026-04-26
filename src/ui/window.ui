@@ -19,6 +19,12 @@
           <object class="AdwToolbarView">
             <child type="top">
               <object class="AdwHeaderBar">
+                <child type="start">
+                  <object class="GtkButton" id="collapse_sidebar_button">
+                    <property name="icon-name">go-previous-symbolic</property>
+                    <property name="tooltip-text" translatable="yes">Collapse Sidebar</property>
+                  </object>
+                </child>
                 <property name="title-widget">
                   <object class="GtkLabel">
                     <property name="label">Loadout</property>
@@ -39,13 +45,24 @@
                     <child>
                       <object class="GtkListBoxRow">
                         <property name="child">
-                          <object class="GtkLabel">
-                            <property name="label">Games</property>
-                            <property name="xalign">0</property>
+                          <object class="GtkBox">
+                            <property name="orientation">horizontal</property>
+                            <property name="spacing">8</property>
                             <property name="margin-top">8</property>
                             <property name="margin-bottom">8</property>
                             <property name="margin-start">8</property>
                             <property name="margin-end">8</property>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="icon-name">applications-games-symbolic</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Games</property>
+                                <property name="xalign">0</property>
+                              </object>
+                            </child>
                           </object>
                         </property>
                       </object>
@@ -53,13 +70,24 @@
                     <child>
                       <object class="GtkListBoxRow">
                         <property name="child">
-                          <object class="GtkLabel">
-                            <property name="label">Presets</property>
-                            <property name="xalign">0</property>
+                          <object class="GtkBox">
+                            <property name="orientation">horizontal</property>
+                            <property name="spacing">8</property>
                             <property name="margin-top">8</property>
                             <property name="margin-bottom">8</property>
                             <property name="margin-start">8</property>
                             <property name="margin-end">8</property>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="icon-name">document-properties-symbolic</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Presets</property>
+                                <property name="xalign">0</property>
+                              </object>
+                            </child>
                           </object>
                         </property>
                       </object>
@@ -80,10 +108,10 @@
                   </object>
                 </property>
                 <child type="start">
-                  <object class="GtkToggleButton" id="sidebar_toggle">
+                  <object class="GtkButton" id="sidebar_toggle_button">
                     <property name="icon-name">sidebar-show-symbolic</property>
-                    <property name="tooltip-text" translatable="yes">Toggle Sidebar</property>
-                    <property name="active">True</property>
+                    <property name="tooltip-text" translatable="yes">Show Sidebar</property>
+                    <property name="visible">false</property>
                   </object>
                 </child>
                 <child type="end">
