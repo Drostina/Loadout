@@ -33,21 +33,28 @@ pub fn populate(list: &gtk::ListBox, presets: &[LaunchPreset]) {
             .map(|g| steam::available_proton_tools(&g.steam_root))
             .unwrap_or_default(),
     );
-    let proton_w = gtk::SizeGroup::new(gtk::SizeGroupMode::Horizontal);
+    let compatibility_w = gtk::SizeGroup::new(gtk::SizeGroupMode::Horizontal);
     let preset_w = gtk::SizeGroup::new(gtk::SizeGroupMode::Horizontal);
-    list.append(&header_row(&proton_w, &preset_w));
+    list.append(&header_row(&compatibility_w, &preset_w));
     for g in games {
-        list.append(&row(g, &tools, presets, &proton_w, &preset_w));
+        list.append(&row(g, &tools, presets, &compatibility_w, &preset_w));
     }
 }
 
-fn header_row(proton_w: &gtk::SizeGroup, preset_w: &gtk::SizeGroup) -> adw::ActionRow {
+fn header_row(
+    compatibility_w: &gtk::SizeGroup,
+    preset_w: &gtk::SizeGroup,
+) -> adw::ActionRow {
     let row = adw::ActionRow::builder()
         .title("Game")
         .activatable(false)
         .selectable(false)
         .build();
-
+    let box_ = gtk::Box::builder()
+        .orientation(gtk::Orientation::Horizontal)
+        .spacing(12)
+        .valign(gtk::Align::Center)
+        .build();
     let compatibility = gtk::Label::builder()
         .label("Compatibility")
         .xalign(0.0)
@@ -58,11 +65,11 @@ fn header_row(proton_w: &gtk::SizeGroup, preset_w: &gtk::SizeGroup) -> adw::Acti
         .xalign(0.0)
         .halign(gtk::Align::Start)
         .build();
-
-    row.add_suffix(&compatibility);
-    row.add_suffix(&preset);
-    proton_w.add_widget(&compatibility);
+    compatibility_w.add_widget(&compatibility);
     preset_w.add_widget(&preset);
+    box_.append(&compatibility);
+    box_.append(&preset);
+    row.add_suffix(&box_);
     row
 }
 
@@ -95,7 +102,7 @@ fn row(
     g: SteamGame,
     tools: &Rc<Vec<steam::ProtonTool>>,
     presets: &[LaunchPreset],
-    proton_w: &gtk::SizeGroup,
+    compatibility_w: &gtk::SizeGroup,
     preset_w: &gtk::SizeGroup,
 ) -> adw::ExpanderRow {
     let SteamGame {
@@ -283,11 +290,16 @@ fn row(
             r.set_subtitle(subtitle_for_launch_options(text.as_str()));
         }
     });
-    row.add_suffix(&dd);
-    row.add_suffix(&preset_dd);
-
-    proton_w.add_widget(&dd);
+    let controls_box = gtk::Box::builder()
+        .orientation(gtk::Orientation::Horizontal)
+        .spacing(12)
+        .valign(gtk::Align::Center)
+        .build();
+    compatibility_w.add_widget(&dd);
     preset_w.add_widget(&preset_dd);
+    controls_box.append(&dd);
+    controls_box.append(&preset_dd);
+    row.add_suffix(&controls_box);
 
     row
 }
