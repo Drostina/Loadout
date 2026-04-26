@@ -1,9 +1,17 @@
-# Loadout
+<h1 align="center">
+  <img align="center" width="150" src="data/icons/hicolor/scalable/apps/dev.drostina.Loadout.svg" alt="Loadout logo" />
+  <br><br>
+  Loadout
+</h1>
 
-[![Built For GNOME](https://img.shields.io/badge/GNOME-4A86CF?logo=gnome&logoColor=white)](https://www.gnome.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+<p align="center">
+  <strong>Mass manage Steam launch options, Proton versions, and Gamescope presets</strong>
+</p>
 
-Mass manage Steam launch options, Proton versions, and Gamescope presets from Loadout.
+<p align="center">
+  <a href="https://www.gnome.org/"><img src="https://img.shields.io/badge/GNOME-4A86CF?logo=gnome&logoColor=white" alt="Built For GNOME" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
+</p>
 
 ⚠️ This project is a work in progress and not intended for use.
 
@@ -16,6 +24,12 @@ Mass manage Steam launch options, Proton versions, and Gamescope presets from Lo
 - Back up changes before writing them
 
 [![Loadout screenshot](assets/readme/sc1.png)](assets/readme/sc1.png)
+
+## Help wanted
+
+The current logo was made by me and it is not great (credits to [Inkscape](https://inkscape.org/)), design is not my strong point.
+
+If you are a designer and want to contribute a better icon/logo for Loadout, please open an issue or PR. I would be very grateful. Please do note I won't be accepting AI images.
 
 ## Build
 
