@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="Adw" version="1.0"/>
+  <object class="GtkScrolledWindow" id="presets_page">
+    <property name="hscrollbar-policy">never</property>
+    <property name="vexpand">true</property>
+    <property name="child">
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="spacing">12</property>
+        <property name="margin-top">12</property>
+        <property name="margin-bottom">12</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="label">Create reusable launch option presets.</property>
+            <property name="xalign">0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkListBox">
+            <property name="selection-mode">none</property>
+            <style>
+              <class name="boxed-list"/>
+            </style>
+            <child>
+              <object class="AdwEntryRow" id="preset_name_entry">
+                <property name="title">Preset name</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwEntryRow" id="preset_command_entry">
+                <property name="title">Launch options</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="add_preset_button">
+            <property name="label">Add preset</property>
+            <property name="halign">start</property>
+            <style>
+              <class name="suggested-action"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkListBox" id="presets_list">
+            <property name="selection-mode">none</property>
+            <style>
+              <class name="boxed-list"/>
+            </style>
+          </object>
+        </child>
+      </object>
+    </property>
+  </object>
+</interface>

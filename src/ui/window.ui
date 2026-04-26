@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="Adw" version="1.0"/>
+  <template class="LoadoutWindow" parent="AdwApplicationWindow">
+    <property name="title" translatable="yes">Loadout</property>
+    <property name="default-width">800</property>
+    <property name="default-height">600</property>
+    <child>
+      <object class="AdwBreakpoint">
+        <condition>max-width: 720sp</condition>
+        <setter object="split_view" property="collapsed">True</setter>
+      </object>
+    </child>
+    <property name="content">
+      <object class="AdwOverlaySplitView" id="split_view">
+        <property name="show-sidebar">true</property>
+        <property name="sidebar">
+          <object class="AdwToolbarView">
+            <child type="top">
+              <object class="AdwHeaderBar">
+                <property name="title-widget">
+                  <object class="GtkLabel">
+                    <property name="label">Loadout</property>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <property name="content">
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="width-request">220</property>
+                <child>
+                  <object class="GtkListBox" id="sidebar_list">
+                    <property name="selection-mode">browse</property>
+                    <style>
+                      <class name="navigation-sidebar"/>
+                    </style>
+                    <child>
+                      <object class="GtkListBoxRow">
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label">Games</property>
+                            <property name="xalign">0</property>
+                            <property name="margin-top">8</property>
+                            <property name="margin-bottom">8</property>
+                            <property name="margin-start">8</property>
+                            <property name="margin-end">8</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkListBoxRow">
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label">Presets</property>
+                            <property name="xalign">0</property>
+                            <property name="margin-top">8</property>
+                            <property name="margin-bottom">8</property>
+                            <property name="margin-start">8</property>
+                            <property name="margin-end">8</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </property>
+        <property name="content">
+          <object class="AdwToolbarView">
+            <child type="top">
+              <object class="AdwHeaderBar">
+                <property name="title-widget">
+                  <object class="GtkLabel" id="page_title_label">
+                    <property name="label">Games</property>
+                  </object>
+                </property>
+                <child type="start">
+                  <object class="GtkToggleButton" id="sidebar_toggle">
+                    <property name="icon-name">sidebar-show-symbolic</property>
+                    <property name="tooltip-text" translatable="yes">Toggle Sidebar</property>
+                    <property name="active">True</property>
+                  </object>
+                </child>
+                <child type="end">
+                  <object class="GtkMenuButton">
+                    <property name="primary">True</property>
+                    <property name="icon-name">open-menu-symbolic</property>
+                    <property name="tooltip-text" translatable="yes">Main Menu</property>
+                    <property name="menu-model">primary_menu</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <property name="content">
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkStack" id="content_stack">
+                    <property name="vexpand">true</property>
+                    <property name="transition-type">slide-left-right</property>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </property>
+      </object>
+    </property>
+  </template>
+  <menu id="primary_menu">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">_Preferences</attribute>
+        <attribute name="action">app.preferences</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
+        <attribute name="action">app.shortcuts</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_About Loadout</attribute>
+        <attribute name="action">app.about</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>

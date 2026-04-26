@@ -1,27 +1,22 @@
+use std::cell::{Cell, RefCell};
 use std::rc::Rc;
+use std::time::Duration;
 
 use adw::prelude::*;
-use gtk::prelude::*;
+use gtk::glib;
 
+use super::presets::LaunchPreset;
 use crate::steam::{self, SteamGame};
 
-pub fn populate(list: &gtk::ListBox) {
-    let list_w = list.downgrade();
-    let click = gtk::GestureClick::new();
-    click.connect_pressed(move |_, _, x, y| {
-        let Some(list) = list_w.upgrade() else { return };
-        let hit_entry = list
-            .pick(x, y, gtk::PickFlags::DEFAULT)
-            .and_then(|w| w.ancestor(adw::EntryRow::static_type()))
-            .is_some();
-        if !hit_entry {
-            if let Some(win) = list.root().and_downcast::<gtk::Window>() {
-                gtk::prelude::GtkWindowExt::set_focus(&win, None::<&gtk::Widget>);
-            }
-        }
-    });
-    list.add_controller(click);
+fn subtitle_for_launch_options(text: &str) -> &str {
+    if text.is_empty() {
+        "No launch options set"
+    } else {
+        text
+    }
+}
 
+pub fn populate(list: &gtk::ListBox, presets: &[LaunchPreset]) {
     let games = steam::installed_games();
     if games.is_empty() {
         list.append(
@@ -38,26 +33,58 @@ pub fn populate(list: &gtk::ListBox) {
             .map(|g| steam::available_proton_tools(&g.steam_root))
             .unwrap_or_default(),
     );
-    let row_h = gtk::SizeGroup::new(gtk::SizeGroupMode::Vertical);
     let proton_w = gtk::SizeGroup::new(gtk::SizeGroupMode::Horizontal);
+    let preset_w = gtk::SizeGroup::new(gtk::SizeGroupMode::Horizontal);
+    list.append(&header_row(&proton_w, &preset_w));
     for g in games {
-        list.append(&row(g, &tools, &row_h, &proton_w));
+        list.append(&row(g, &tools, presets, &proton_w, &preset_w));
     }
+}
+
+fn header_row(proton_w: &gtk::SizeGroup, preset_w: &gtk::SizeGroup) -> adw::ActionRow {
+    let row = adw::ActionRow::builder()
+        .title("Game")
+        .activatable(false)
+        .selectable(false)
+        .build();
+
+    let compatibility = gtk::Label::builder()
+        .label("Compatibility")
+        .xalign(0.0)
+        .halign(gtk::Align::Start)
+        .build();
+    let preset = gtk::Label::builder()
+        .label("Preset")
+        .xalign(0.0)
+        .halign(gtk::Align::Start)
+        .build();
+
+    row.add_suffix(&compatibility);
+    row.add_suffix(&preset);
+    proton_w.add_widget(&compatibility);
+    preset_w.add_widget(&preset);
+    row
 }
 
 fn proton_factory(tools: Rc<Vec<steam::ProtonTool>>) -> gtk::SignalListItemFactory {
     let f = gtk::SignalListItemFactory::new();
-    f.connect_setup(|_, o| {
-        o.downcast_ref::<gtk::ListItem>()
-            .unwrap()
+    f.connect_setup(|_, obj| {
+        obj.downcast_ref::<gtk::ListItem>()
+            .expect("proton factory setup expects gtk::ListItem")
             .set_child(Some(&gtk::Label::builder().xalign(0.0).build()));
     });
-    f.connect_bind(move |_, o| {
-        let item = o.downcast_ref::<gtk::ListItem>().unwrap();
-        let label = item.child().unwrap().downcast::<gtk::Label>().unwrap();
+    f.connect_bind(move |_, obj| {
+        let item = obj
+            .downcast_ref::<gtk::ListItem>()
+            .expect("proton factory bind expects gtk::ListItem");
+        let label = item
+            .child()
+            .expect("proton factory list item child missing")
+            .downcast::<gtk::Label>()
+            .expect("proton factory child should be gtk::Label");
         let i = item.position() as usize;
         label.set_text(match i {
-            0 => "Native",
+            0 => "Steam Default",
             _ => tools.get(i - 1).map(|t| t.display.as_str()).unwrap_or(""),
         });
     });
@@ -67,9 +94,10 @@ fn proton_factory(tools: Rc<Vec<steam::ProtonTool>>) -> gtk::SignalListItemFacto
 fn row(
     g: SteamGame,
     tools: &Rc<Vec<steam::ProtonTool>>,
-    row_h: &gtk::SizeGroup,
+    presets: &[LaunchPreset],
     proton_w: &gtk::SizeGroup,
-) -> adw::EntryRow {
+    preset_w: &gtk::SizeGroup,
+) -> adw::ExpanderRow {
     let SteamGame {
         name,
         appid,
@@ -79,8 +107,11 @@ fn row(
         proton,
     } = g;
 
-    let row = adw::EntryRow::builder().title(&name).build();
-    row.set_text(launch_options.as_deref().unwrap_or(""));
+    let launch_text = launch_options.as_deref().unwrap_or("").to_string();
+    let row = adw::ExpanderRow::builder()
+        .title(&name)
+        .subtitle(subtitle_for_launch_options(&launch_text))
+        .build();
 
     if let Some(path) = icon_path {
         let img = gtk::Image::from_file(path);
@@ -111,8 +142,8 @@ fn row(
     let tools_c = tools.clone();
     let root = steam_root.clone();
     let aid = appid.clone();
-    dd.connect_selected_item_notify(move |d| {
-        let i = d.selected() as usize;
+    dd.connect_selected_item_notify(move |dropdown| {
+        let i = dropdown.selected() as usize;
         let id = if i == 0 {
             ""
         } else {
@@ -120,24 +151,139 @@ fn row(
         };
         steam::update_proton_version(&root, &aid, id);
     });
+    dd.set_tooltip_text(Some("Choose Proton compatibility tool"));
 
-    row.add_suffix(&dd);
-    row_h.add_widget(&row);
-    proton_w.add_widget(&dd);
+    let options_row = adw::EntryRow::builder().title("Launch options").build();
+    options_row.set_text(&launch_text);
+    row.add_row(&options_row);
 
-    let root = steam_root;
-    let aid = appid;
+    let preset_model_labels: Vec<&str> = std::iter::once("None")
+        .chain(presets.iter().map(|p| p.name.as_str()))
+        .collect();
+    let preset_model = gtk::StringList::new(&preset_model_labels);
+    let preset_dd = gtk::DropDown::builder()
+        .model(&preset_model)
+        .valign(gtk::Align::Center)
+        .vexpand(false)
+        .build();
+    preset_dd.set_tooltip_text(Some("Apply saved launch options preset"));
+    let preset_idx = if launch_text.is_empty() {
+        0
+    } else {
+        presets
+            .iter()
+            .position(|p| p.command == launch_text)
+            .map(|i| (i + 1) as u32)
+            .unwrap_or(0)
+    };
+    preset_dd.set_selected(preset_idx);
+
+    let applying_preset = Rc::new(Cell::new(false));
+    let syncing_preset_selection = Rc::new(Cell::new(false));
+    let pending_save = Rc::new(RefCell::new(None::<glib::SourceId>));
+    let root = steam_root.clone();
+    let aid = appid.clone();
     let row_w = row.downgrade();
-    let fc = gtk::EventControllerFocus::new();
-    fc.connect_leave(move |_| {
+    let options_w = options_row.downgrade();
+    let preset_commands = Rc::new(
+        presets
+            .iter()
+            .map(|p| p.command.clone())
+            .collect::<Vec<_>>(),
+    );
+    let commands_c = preset_commands.clone();
+    let applying_preset_c = applying_preset.clone();
+    let syncing_preset_selection_c = syncing_preset_selection.clone();
+    let pending_save_c = pending_save.clone();
+    preset_dd.connect_selected_notify(move |dropdown| {
+        if syncing_preset_selection_c.get() {
+            return;
+        }
+        let i = dropdown.selected() as usize;
+        let command = if i == 0 {
+            ""
+        } else {
+            let Some(command) = commands_c.get(i - 1) else {
+                return;
+            };
+            command.as_str()
+        };
+        if let (Some(r), Some(o)) = (row_w.upgrade(), options_w.upgrade()) {
+            applying_preset_c.set(true);
+            o.set_text(command);
+            if !r.is_expanded() {
+                r.set_subtitle(subtitle_for_launch_options(command));
+            }
+            applying_preset_c.set(false);
+        }
+        if let Some(source) = pending_save_c.borrow_mut().take() {
+            source.remove();
+        }
+        steam::update_launch_options(&root, &aid, command);
+    });
+    let preset_dd_w = preset_dd.downgrade();
+    let applying_preset_c = applying_preset.clone();
+    let row_w = row.downgrade();
+    let preset_commands_for_match = preset_commands.clone();
+    let syncing_preset_selection_c = syncing_preset_selection.clone();
+    let root_for_change = steam_root.clone();
+    let aid_for_change = appid.clone();
+    let pending_save_c = pending_save.clone();
+    options_row.connect_changed(move |o| {
+        if applying_preset_c.get() {
+            return;
+        }
+        if let Some(dd) = preset_dd_w.upgrade() {
+            let text = o.text();
+            let idx = if text.is_empty() {
+                0
+            } else {
+                preset_commands_for_match
+                    .iter()
+                    .position(|cmd| cmd == text.as_str())
+                    .map(|i| (i + 1) as u32)
+                    .unwrap_or(0)
+            };
+            syncing_preset_selection_c.set(true);
+            dd.set_selected(idx);
+            syncing_preset_selection_c.set(false);
+        }
         if let Some(r) = row_w.upgrade() {
-            steam::update_launch_options(&root, &aid, &r.text());
+            let text = o.text();
+            if !r.is_expanded() {
+                r.set_subtitle(subtitle_for_launch_options(text.as_str()));
+            }
+        }
+        if let Some(source) = pending_save_c.borrow_mut().take() {
+            source.remove();
+        }
+        let text = o.text().to_string();
+        let root = root_for_change.clone();
+        let aid = aid_for_change.clone();
+        let pending_save_done = pending_save_c.clone();
+        let source = glib::timeout_add_local(Duration::from_millis(400), move || {
+            steam::update_launch_options(&root, &aid, &text);
+            pending_save_done.borrow_mut().take();
+            glib::ControlFlow::Break
+        });
+        *pending_save_c.borrow_mut() = Some(source);
+    });
+    let options_w = options_row.downgrade();
+    row.connect_expanded_notify(move |r| {
+        if r.is_expanded() {
+            r.set_subtitle("");
+            return;
+        }
+        if let Some(o) = options_w.upgrade() {
+            let text = o.text();
+            r.set_subtitle(subtitle_for_launch_options(text.as_str()));
         }
     });
-    row.delegate().unwrap().add_controller(fc);
-    row.connect_entry_activated(|r| {
-        r.parent().map(|p| p.grab_focus());
-    });
+    row.add_suffix(&dd);
+    row.add_suffix(&preset_dd);
+
+    proton_w.add_widget(&dd);
+    preset_w.add_widget(&preset_dd);
 
     row
 }

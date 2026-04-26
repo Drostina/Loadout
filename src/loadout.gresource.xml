@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/dev/drostina/Loadout">
-    <file preprocess="xml-stripblanks" alias="window.ui">app/window.ui</file>
+    <file preprocess="xml-stripblanks" alias="window.ui">ui/window.ui</file>
+    <file preprocess="xml-stripblanks" alias="games-page.ui">ui/games-page.ui</file>
+    <file preprocess="xml-stripblanks" alias="presets-page.ui">ui/presets-page.ui</file>
     <file preprocess="xml-stripblanks" alias="shortcuts-dialog.ui">ui/shortcuts-dialog.ui</file>
   </gresource>
 </gresources>
