@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="loadout">
-	<schema id="dev.drostina.Loadout" path="/dev/drostina/Loadout/">
+	<schema id="io.github.Drostina.Loadout" path="/io/github/Drostina/Loadout/">
 		<key name="launch-presets" type="as">
 			<default>[]</default>
 		</key>

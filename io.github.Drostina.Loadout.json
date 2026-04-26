@@ -1,5 +1,5 @@
 {
-    "id" : "dev.drostina.Loadout",
+    "id" : "io.github.Drostina.Loadout",
     "runtime" : "org.gnome.Platform",
     "runtime-version" : "48",
     "sdk" : "org.gnome.Sdk",
@@ -8,17 +8,16 @@
     ],
     "command" : "loadout",
     "finish-args" : [
-        "--share=network",
         "--share=ipc",
         "--socket=fallback-x11",
         "--device=dri",
-        "--socket=wayland"
+        "--socket=wayland",
+        "--filesystem=~/.steam",
+        "--filesystem=~/.local/share/Steam",
+        "--filesystem=~/.var/app/com.valvesoftware.Steam/.local/share/Steam"
     ],
     "build-options" : {
         "append-path" : "/usr/lib/sdk/rust-stable/bin",
-        "build-args" : [
-            "--share=network"
-        ],
         "env" : {
             "RUST_BACKTRACE" : "1",
             "RUST_LOG" : "loadout=debug"
@@ -43,7 +42,8 @@
             "sources" : [
                 {
                     "type" : "git",
-                    "url" : "file:///home/jackson/Downloads"
+                    "url" : "https://github.com/Drostina/Loadout.git",
+                    "branch" : "main"
                 }
             ],
             "config-opts" : [

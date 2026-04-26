@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-  <gresource prefix="/dev/drostina/Loadout">
+  <gresource prefix="/io/github/Drostina/Loadout">
     <file preprocess="xml-stripblanks" alias="window.ui">ui/window.ui</file>
     <file preprocess="xml-stripblanks" alias="games-page.ui">ui/games-page.ui</file>
     <file preprocess="xml-stripblanks" alias="presets-page.ui">ui/presets-page.ui</file>

@@ -1,6 +1,6 @@
 # List of source files containing translatable strings.
 # Please keep this file sorted alphabetically.
-data/dev.drostina.Loadout.desktop.in
-data/dev.drostina.Loadout.metainfo.xml.in
-data/dev.drostina.Loadout.gschema.xml
+data/io.github.Drostina.Loadout.desktop.in
+data/io.github.Drostina.Loadout.metainfo.xml.in
+data/io.github.Drostina.Loadout.gschema.xml
 src/app/window.ui

@@ -55,7 +55,7 @@ impl LoadoutApplication {
         glib::Object::builder()
             .property("application-id", application_id)
             .property("flags", flags)
-            .property("resource-base-path", "/dev/drostina/Loadout")
+            .property("resource-base-path", "/io/github/Drostina/Loadout")
             .build()
     }
 
@@ -73,7 +73,7 @@ impl LoadoutApplication {
         let window = self.active_window().unwrap();
         let about = adw::AboutDialog::builder()
             .application_name("Loadout")
-            .application_icon("dev.drostina.Loadout")
+            .application_icon("io.github.Drostina.Loadout")
             .developer_name("Drostina")
             .version(VERSION)
             .developers(vec!["Drostina"])

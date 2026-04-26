@@ -19,7 +19,7 @@ fn main() -> glib::ExitCode {
         .expect("Could not load resources");
     gio::resources_register(&resources);
 
-    let app = LoadoutApplication::new("dev.drostina.Loadout", &gio::ApplicationFlags::empty());
+    let app = LoadoutApplication::new("io.github.Drostina.Loadout", &gio::ApplicationFlags::empty());
 
     app.run()
 }

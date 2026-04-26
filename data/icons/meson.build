@@ -1,4 +1,4 @@
-application_id = 'dev.drostina.Loadout'
+application_id = 'io.github.Drostina.Loadout'
 
 scalable_dir = 'hicolor' / 'scalable' / 'apps'
 install_data(

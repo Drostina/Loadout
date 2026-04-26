@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Loadout
 Exec=loadout
-Icon=dev.drostina.Loadout
+Icon=io.github.Drostina.Loadout
 Terminal=false
 Type=Application
 Categories=Utility;

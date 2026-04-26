@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img align="center" width="150" src="data/icons/hicolor/scalable/apps/dev.drostina.Loadout.svg" alt="Loadout logo" />
+  <img align="center" width="150" src="data/icons/hicolor/scalable/apps/io.github.Drostina.Loadout.svg" alt="Loadout logo" />
   <br><br>
   Loadout
 </h1>

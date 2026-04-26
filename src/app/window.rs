@@ -10,7 +10,7 @@ mod imp {
     use super::*;
 
     #[derive(Debug, gtk::CompositeTemplate)]
-    #[template(resource = "/dev/drostina/Loadout/window.ui")]
+    #[template(resource = "/io/github/Drostina/Loadout/window.ui")]
     pub struct LoadoutWindow {
         #[template_child]
         pub split_view: TemplateChild<adw::OverlaySplitView>,
@@ -51,7 +51,7 @@ mod imp {
                 add_preset_button: OnceCell::new(),
                 cancel_edit_button: OnceCell::new(),
                 editing_preset: RefCell::new(None),
-                settings: gio::Settings::new("dev.drostina.Loadout"),
+                settings: gio::Settings::new("io.github.Drostina.Loadout"),
                 presets: RefCell::new(Vec::new()),
             }
         }
@@ -113,14 +113,14 @@ impl LoadoutWindow {
 
     fn setup_stack_pages(&self) {
         let stack = self.imp().content_stack.get();
-        let games_builder = gtk::Builder::from_resource("/dev/drostina/Loadout/games-page.ui");
+        let games_builder = gtk::Builder::from_resource("/io/github/Drostina/Loadout/games-page.ui");
         let games_page: gtk::ScrolledWindow = games_builder.object("games_page").unwrap();
         let games_list: gtk::ListBox = games_builder.object("games_list").unwrap();
         stack.add_titled(&games_page, Some("games"), "Games");
         let _ = self.imp().games_list.set(games_list);
 
         let presets_builder =
-            gtk::Builder::from_resource("/dev/drostina/Loadout/presets-page.ui");
+            gtk::Builder::from_resource("/io/github/Drostina/Loadout/presets-page.ui");
         let presets_page: gtk::ScrolledWindow = presets_builder.object("presets_page").unwrap();
         let presets_list: gtk::ListBox = presets_builder.object("presets_list").unwrap();
         let preset_name_entry: adw::EntryRow = presets_builder.object("preset_name_entry").unwrap();
